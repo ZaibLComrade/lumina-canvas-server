@@ -52,7 +52,17 @@ app.delete("/tasks/:id", async(req, res) => {
 	const id = req.params.id;
 	const query = { _id: new ObjectId(id) };
 	const result = await taskCollection.deleteOne(query);
-	console.log(query, result);
+	res.send(result);
+})
+
+// Edit task
+app.patch("/tasks/:id", async(req, res) => {
+	const id = req.params.id;
+	const update = { $set: req.body };
+	const query = { _id: new ObjectId(id) };
+	const options = { upsert: true }
+	const result = await taskCollection.updateOne(query, update, options);
+	console.log(result);
 	res.send(result);
 })
 

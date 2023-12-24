@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 // Middlewares
 app.use(express.json());
 app.use(cors({
-	origin: ["http://localhost:5173"],
+	origin: ["http://localhost:5173", "https://lumina-canvas.web.app"],
 	credentials: true,
 }));
 
@@ -57,8 +57,16 @@ app.delete("/tasks/:id", async(req, res) => {
 
 // Edit task
 app.patch("/tasks/:id", async(req, res) => {
+	const task = req.body;
+	const updatedTask = {};
+	
+	// Creating object to ensure partial update by assigning only updated fields
+	Object.keys(task).map(objKey => {
+		if(task[objKey]) updatedTask[objKey] = task[objKey];
+	})
+
 	const id = req.params.id;
-	const update = { $set: req.body };
+	const update = { $set: updatedTask };
 	const query = { _id: new ObjectId(id) };
 	const options = { upsert: true }
 	const result = await taskCollection.updateOne(query, update, options);
